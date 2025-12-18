@@ -1,13 +1,16 @@
 import unittest
 from math_function import add_numbers
 
-class TestAddNumbers(unittest.TestCase):
+# define the unit tests
+class my_unit_tests(unittest.TestCase):
+    def test_add(self):
 
-  def test_add_two_positive_numbers(self):
-    self.assertEqual(add_numbers(2,3),5)
+        # test adding negative integers
+        self.assertEqual(add_numbers(4,5),9)
 
-  def test_add_two_negative_and_positive(self):
-    self.assertEqual(add_numbers(-1,4),3)
+        # test adding floats"
+        self.assertEqual(add_numbers(3,2),5)
 
+# run the tests
 if __name__ == "__main__":
     unittest.main()

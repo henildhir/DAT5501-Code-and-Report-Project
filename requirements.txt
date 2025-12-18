@@ -1,4 +1,1 @@
 pytest
-pandas
-matplotlib
-scipy

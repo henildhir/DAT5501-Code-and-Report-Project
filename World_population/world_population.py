@@ -1,6 +1,6 @@
 import pandas as pd
 
-world_population = pd.read_csv("world_population.csv", skiprows=4)
+world_population = pd.read_csv("World_population/world_population.csv", skiprows=4)
 
 countries=["United Kingdom","India","Malawi","World"]
 world_population_filtered = world_population[world_population["Country Name"].isin(countries)]
@@ -25,4 +25,4 @@ world_population_long["Year"] = world_population_long["Year"].astype(int)
 
 print(world_population_long.head())
 
-world_population_long.to_csv("new_world_population.csv",index = False)
+world_population_long.to_csv("World_population/new_world_population.csv",index = False)

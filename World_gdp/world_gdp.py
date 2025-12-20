@@ -1,6 +1,6 @@
 import pandas as pd
 
-world_gdp = pd.read_csv("world_gdp.csv", skiprows=4)
+world_gdp = pd.read_csv("World_gdp/world_gdp.csv", skiprows=4)
 countries =["United Kingdom","India","Malawi","World"]
 world_gdp_filtered=world_gdp[world_gdp["Country Name"].isin(countries)]
 
@@ -22,7 +22,7 @@ world_gdp_long = world_gdp_long.sort_values(
 world_gdp_long["Year"] = world_gdp_long["Year"].astype(int)
 
 world_gdp_long.to_csv(
-    "new_world_gdp.csv",
+    "World_gdp/new_world_gdp.csv",
     index=False  # this avoids saving the 0,1,2 index column
 )
 

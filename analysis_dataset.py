@@ -1,4 +1,6 @@
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 gdp = pd.read_csv("World_gdp/new_world_gdp.csv")
 population = pd.read_csv("World_population/new_world_population.csv")

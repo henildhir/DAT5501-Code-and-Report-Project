@@ -16,7 +16,6 @@ for country in countries:
     data_country["CO2_percentage_change"] = (
         data_country["CO2 per capita (Trillions)"].pct_change()*100
     )
-
     data_country["GDP_percentage_change"] = (
         data_country["GDP per capita"].pct_change()*100
     )
@@ -25,7 +24,7 @@ for country in countries:
 
 change=pd.concat(subplot, ignore_index=True)
 
-fig,axes = plt.subplots(2,1,figsize=(10,8), sharex=True)
+fig,axes = plt.subplots(2,1,figsize=(10,8))
 
 for country in countries:
     data_country = change[change["Country Name"]==country]
@@ -34,6 +33,7 @@ for country in countries:
 
 axes[0].axhline(0, color ="black", linewidth=1)
 axes[0].set_ylabel("% change")
+axes[0].set_xlabel("Year")
 axes[0].set_title("Annual % change of the world in CO2 emissions per capita since 1980")
 axes[0].grid(True, alpha=0.3)
 
@@ -51,6 +51,9 @@ axes[1].grid(True,alpha=0.3)
 for ax in axes:
     ax.spines["top"].set_visible(True)
     ax.spines["right"].set_visible(True)
+    ax.axvspan(2008,2009,color="grey",alpha=0.35,label="2008 financial crisis")
+    y_top=ax.get_ylim()[1]
+    ax.text(2008.5,y_top,"2008 financial crisis",ha="center",va="top",fontsize=8,color="black")
 
 folder="Graphs"
 os.makedirs(folder,exist_ok=True)

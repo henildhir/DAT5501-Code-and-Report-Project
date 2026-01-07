@@ -3,7 +3,6 @@ import pandas as pd
 import co2_emissions
 import matplotlib.pyplot as plt
 
-
 class TestAnalysisDatasetDataframe(unittest.TestCase):
     def setUp(self):
         self.df = pd.DataFrame(

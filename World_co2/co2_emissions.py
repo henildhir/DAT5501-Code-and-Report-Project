@@ -21,7 +21,6 @@ def co2_emissions_cleaning(dataset):
         }
     )
 
-    print(co2_emissions.head())
     return co2_emissions
 
 def save_figure(folder, filename):
@@ -38,6 +37,7 @@ def run():
     dataset = load(filepath)
     co2_emissions_cleaning(dataset)
     save_figure(folder,filename)
+    print("run successfully")
     
 if __name__ == "__main__":
     run()

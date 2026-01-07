@@ -7,17 +7,47 @@ import statsmodels.api as sm
 import numpy as np
 import os
 
-def create_plots():
-    #Reads dataset and validates whether folder for graph has been created
-    dataset = pd.read_csv("analysis_dataset.csv")
-    folder="Co2_emissions_vs_gdp_per_capita"
-    os.makedirs(folder,exist_ok=True)
+def load(filepath):
+    #Reads the analysis dataset, puts it into a variable and converts the year column to numeric values
+    dataset=pd.read_csv(filepath)
+    dataset["Year"]=pd.to_numeric(dataset["Year"],errors="coerce")
+    return dataset
 
+def filter_10_years(dataset): 
     #filters the dataset for minimum and maximum years and creates an array of plots
     max_year=dataset["Year"].max()
     min_year=max_year-9
     filter=dataset[(dataset["Year"]>=min_year)&(dataset["Year"]<=max_year)]
-    fig,axes = plt.subplots(1,2,figsize=(10,5))
+    return filter,min_year,max_year
+
+def select(dataset):
+    #filters dataset for given country and converts appropriate x and y values from given dataset
+    world=dataset[dataset["Country Name"]=="World"].copy()
+    x=world["GDP per capita"].values
+    y=world["CO2 per capita (Trillions)"].values
+    return x,y
+
+def regression(x,y):
+    #computes pearson correlation between gdp per capita and co2 per capita 
+    r,p=pearsonr(x,y)
+    X=sm.add_constant(x)
+    model=sm.OLS(y,X).fit()
+
+    #generates an array of 100 x values between max and min value
+    x_grid=np.linspace(x.min(),x.max(),200)
+    X_grid=sm.add_constant(x_grid)
+
+    #generates all the statistics for upper and lower confidence bands to be used later for 95% confidence band
+    prediction=model.get_prediction(X_grid)
+    prediction_summary = prediction.summary_frame(alpha=0.05)
+    y_hat=prediction_summary["mean"].values
+    ci_lower=prediction_summary["mean_ci_lower"].values
+    ci_upper=prediction_summary["mean_ci_upper"].values
+    return r,x_grid,y_hat,ci_lower,ci_upper
+
+def create_plots(filter, x_world, y_world, r, x_grid, y_hat, ci_lower, ci_upper):
+    #Creates figure and all plots, returns fig and axes
+    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 
     #a scatter plot is created with given x and y values from filtered dataset, with appropriate colours
     ax = sns.scatterplot(
@@ -44,42 +74,19 @@ def create_plots():
                 fontsize=8)
     axes[0].grid(True, alpha=0.3)
 
-    #filters dataset for given country and converts appropriate x and y values from given dataset
-    world=dataset[dataset["Country Name"]=="World"].copy()
-    x=world["GDP per capita"].values
-    y=world["CO2 per capita (Trillions)"].values
-
-    #computes pearson correlation between gdp per capita and co2 per capita 
-    r,p=pearsonr(x,y)
-    X=sm.add_constant(x)
-    model=sm.OLS(y,X).fit()
-
-    #generates an array of 100 x values between max and min value
-    x_grid=np.linspace(x.min(),
-                    x.max(),
-                    200)
-    X_grid=sm.add_constant(x_grid)
-
-    #generates all the statistics for upper and lower confidence bands to be used later for 95% confidence band
-    prediction=model.get_prediction(X_grid)
-    prediction_summary = prediction.summary_frame(alpha=0.05)
-    y_hat=prediction_summary["mean"].values
-    ci_lower=prediction_summary["mean_ci_lower"].values
-    ci_upper=prediction_summary["mean_ci_upper"].values
-
     #plots a scatter graph of original dataset values with a clear label
-    axes[1].scatter(x,
-                    y,
+    axes[1].scatter(x_world,
+                    y_world,
                     color="red",
                     alpha=0.55,
                     label="World data"
                     )
 
     #generates values for function ax+b for any x values
-    coeffs=np.polyfit(x,y,1)
+    coeffs=np.polyfit(x_world,y_world,1)
     poly=np.poly1d(coeffs)
-    x_line = np.linspace(x.min(),
-                        x.max(),
+    x_line = np.linspace(x_world.min(),
+                        x_world.max(),
                         100)
 
     #plots the regression line of all observed data points 
@@ -120,10 +127,28 @@ def create_plots():
         ax.spines["top"].set_visible(True)
         ax.spines["right"].set_visible(True)
 
-    #saves plot with desired file name within pre-defined folder
-    plt.savefig(os.path.join(folder,"co2_emissions_gdp_per_capita.png"))
+    return fig,axes
+
+def save(fig,folder,filename):
+    #Saves plot with desired file name within pre-defined folder
+    os.makedirs(folder, exist_ok=True)
+    plt.savefig(os.path.join(folder, filename))
+    
+def run():
+    filepath = "analysis_dataset.csv"
+    folder = "co2_emissions_vs_gdp_per_capita"
+    filename = "co2_emissions_gdp_per_capita.png"
+    dataset = load(filepath)
+    filter, min_year, max_year = filter_10_years(dataset)
+    x_world, y_world = select(dataset)
+    r, x_grid, y_hat, ci_lower, ci_upper = regression(x_world, y_world)
+
+    fig, axes = create_plots(filter, x_world, y_world,
+                             r, x_grid, y_hat, ci_lower, ci_upper)
+    save(fig, folder, filename)
+    #shows the plots
     plt.tight_layout()
     plt.show()
 
 if __name__ == "__main__":
-    create_plots()
+    run()

@@ -1,72 +1,57 @@
 import unittest
 import pandas as pd
 import numpy as np
-import matplotlib
 
-# avoid GUI popups during tests
-matplotlib.use("Agg")
+import co2_emissions_gdp_per_capita as cg 
 
-import co2_emissions_gdp_per_capita as cg   # adjust if module name differs
+class TestCo2GdpRegression(unittest.TestCase):
 
-
-class TestCo2EmissionsGdpPerCapita(unittest.TestCase):
     def setUp(self):
-        """
-        Small dataframe with a known pattern:
-        - 1 missing Country Name
-        - 1 missing CO2 value
-        - 1 missing GDP value
-        - no missing Year
-        """
-        self.sample_data = pd.DataFrame(
-            {
-                "Country Name": ["World", "World", None, "India"],
-                "Year": [2010, 2011, 2012, 2010],
-                "CO2 per capita (Trillions)": [5.0, 5.5, 6.0, np.nan],
-                "GDP per capita": [10000.0, np.nan, 12000.0, 2000.0],
-            }
-        )
+        #Sample data with two countries and simple linear relation for World
+        self.sample = pd.DataFrame({
+            "Country Name": ["World", "World", "World", "Other", "Other"],
+            "Year": [2000, 2005, 2010, 2005, 2010],
+            "GDP per capita":                [1000, 2000, 3000, 1500, 2500],
+            "CO2 per capita (Trillions)":    [1.0, 2.0, 3.0, 0.5, 0.7],
+        })
 
-    def test_columns_present(self):
-        """Check that the key columns exist."""
-        expected = {
-            "Country Name",
-            "Year",
-            "CO2 per capita (Trillions)",
-            "GDP per capita",
-        }
-        self.assertTrue(expected.issubset(self.sample_data.columns))
+    def test_filter_10_years_data_handling(self):
+        #Ensure Year is numeric and filtering selects last 10 years correctly
+        #Pretend max year is 2010 -> last 10 years: 2001–2010, so 2000 should drop
+        filter_df, min_year, max_year = cg.filter_10_years(self.sample)
 
-    def test_null_values_exist_in_expected_columns(self):
-        """
-        Important null checks:
-        - there are some nulls in the dataframe,
-        - each of the three columns we know has exactly one null,
-        - 'Year' has no nulls.
-        """
-        # At least one null overall
-        self.assertTrue(self.sample_data.isnull().values.any())
+        self.assertTrue(np.issubdtype(filter_df["Year"].dtype, np.number))
+        self.assertEqual(max_year, self.sample["Year"].max())
+        self.assertEqual(min_year, max_year - 9)
 
-        # Per‑column expectations
-        null_counts = self.sample_data.isnull().sum()
-        self.assertEqual(null_counts["Country Name"], 1)
-        self.assertEqual(null_counts["CO2 per capita (Trillions)"], 1)
-        self.assertEqual(null_counts["GDP per capita"], 1)
-        self.assertEqual(null_counts["Year"], 0)
+        #Row with Year 2000 should be removed
+        self.assertFalse((filter_df["Year"] == 2000).any())
 
-    def test_no_nulls_in_numeric_columns_real_dataset(self):
-        """
-        Simple but important: load the real CSV and check that the
-        critical numeric columns have no missing values.
-        (Change expectation if your real data *should* contain nulls.)
-        """
-        dataset = pd.read_csv("analysis_dataset.csv")
+    def test_select_world_returns_correct_arrays(self):
+        x, y = cg.select(self.sample)
 
-        for col in ["Year", "GDP per capita", "CO2 per capita (Trillions)"]:
-            self.assertFalse(
-                dataset[col].isnull().any(),
-                msg=f"Found nulls in real dataset column: {col}",
-            )
+        #Only rows for World
+        self.assertEqual(len(x), 3)
+        self.assertEqual(len(y), 3)
+        self.assertTrue((self.sample.loc[self.sample["Country Name"]=="World",
+                                         "GDP per capita"].values == x).all())
+        self.assertTrue((self.sample.loc[self.sample["Country Name"]=="World",
+                                         "CO2 per capita (Trillions)"].values == y).all())
+
+    def test_regression_values_reasonable(self):
+        x, y = cg.select(self.sample)
+        r, x_grid, y_hat, ci_lower, ci_upper = cg.regression(x, y)
+
+        #Since y = 0.001*x here (perfect linear), |r| should be close to 1
+        self.assertAlmostEqual(abs(r), 1.0, places=4)
+
+        #Regression outputs must all have same length and be finite
+        self.assertEqual(len(x_grid), len(y_hat))
+        self.assertEqual(len(x_grid), len(ci_lower))
+        self.assertEqual(len(x_grid), len(ci_upper))
+        self.assertTrue(np.isfinite(y_hat).all())
+        self.assertTrue(np.isfinite(ci_lower).all())
+        self.assertTrue(np.isfinite(ci_upper).all())
 
 
 if __name__ == "__main__":

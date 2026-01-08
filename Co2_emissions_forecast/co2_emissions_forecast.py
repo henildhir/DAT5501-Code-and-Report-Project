@@ -1,3 +1,4 @@
+#imports all functions
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -20,6 +21,7 @@ def get_config():
         "India": "blue",
         "Malawi": "orange",}
 
+    #predefined dictionary for degrees for all countries when creating polynomial graphs
     degrees = {
         "United Kingdom": 2,
         "India": 2,
@@ -76,8 +78,8 @@ def plot_country_forecast(country, colors, x_train, y_train,x_forecast, y_foreca
         zorder=5,
         s=25,)
 
+#Sets up figure size for better visualation
 def setup_figure():
-    #Sets up figure size
     plt.figure(figsize=(10, 6))
 
 #creates all plots and adds their axis, legend and saves file to given folder
@@ -93,6 +95,7 @@ def finalise_plot():
         linestyle="--",
         linewidth=1.5,
         alpha=0.7,)
+    #y axis limited to -0.2 so that the forecasting for the UK can be seen to reach 0
     plt.ylim(-0.2, None)
     plt.grid(True, alpha=0.4)
     plt.legend(loc="best", fontsize="small")
@@ -116,7 +119,7 @@ def co2_emissions_forecast(filepath):
         country_data, x_train, y_train = prepare_country_data(dataset, country)
         x_forecast, y_forecast, historical, future = fit_and_forecast(x_train, y_train, degrees[country])
 
-        #adds lines and points to the shared figure
+        #adds lines and points to the shared figure for both historical and future points with distinct colours
         plot_country_forecast(
             country,
             colors,
@@ -127,7 +130,7 @@ def co2_emissions_forecast(filepath):
             historical,
             future,)
 
-        #stores results for potential further analysis or testing
+        #stores results for potential further analysis or testing, includes all data points for each country
         results[country] = (
             country_data,
             x_train,
@@ -136,10 +139,11 @@ def co2_emissions_forecast(filepath):
             y_forecast,
             historical,
             future,)
-
+    #runs the function and adds all necessary visuals for graph including axes labels and grid for better readability
     finalise_plot()
     return dataset, results
 
+#runs the main function and called the combined dataset
 def run():
     filepath = "analysis_dataset.csv"
     co2_emissions_forecast(filepath)

@@ -1,7 +1,7 @@
+#imports all libraries and functions required 
 import unittest
 import pandas as pd
 import numpy as np
-
 import co2_emissions_gdp_per_capita as cg 
 
 class TestCo2GdpRegression(unittest.TestCase):

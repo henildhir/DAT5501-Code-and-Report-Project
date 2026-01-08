@@ -39,11 +39,12 @@ def sort_and_fix(world_gdp_long):
 #cleans entire data set into long format including convert strings to numeric values
 def world_gdp_cleaning():
     world_gdp = load()
+    #dataset given is then filtered, converted and sorted to find any bugs or errors 
     world_gdp_filtered = filter(world_gdp)
     world_gdp_long = convert_to_long(world_gdp_filtered)
     world_gdp_long = sort_and_fix(world_gdp_long)
     #saves cleaned dataset within given directory without index values
-    # this avoids saving the 0,1,2 index column
+    #this avoids saving the 0,1,2 index column
     world_gdp_long.to_csv(
         "World_gdp/new_world_gdp.csv",)
     print(world_gdp_long.head())

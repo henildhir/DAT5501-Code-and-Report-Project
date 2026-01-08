@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
-#loads the predefined filepath ready to be analysed
+#loads the predefined filepath ready to be analysed with year column converted to numeric values to ensure consistency throughout
 def load(filepath):
     dataset=pd.read_csv(filepath)
     dataset["Year"]=pd.to_numeric(dataset["Year"],errors="coerce")
@@ -21,17 +21,17 @@ def key_figure_creation(dataset):
                 linewidth=2,
                 markersize=5)
 
-        #axis labels, titles and legend added to plot
+        #axis labels, titles and legend added to plot to improve readability
         plt.xlabel=("Year")
         plt.ylabel("Co2 emissions per capita (tonnes)")
         plt.title("CO2 emissions per capita (tonnes) over time since 1980")
         plt.grid(True,alpha=0.3)
 
-        #vertical line created at 2015 to show historical events as a dashed line
+        #vertical line created at 2015 to show historical events as a dashed line to improve readability 
         Paris_agreement=2015
         plt.axvline(x=Paris_agreement,color="grey",linestyle="--",linewidth=1.5,alpha=0.7,label="2015 Paris Agreement")
 
-        #reorder legend entries to match narrative order in the report
+        #reorder legend entries to match narrative order in the report to improve readability, easier to distinguish which lines belong to which country
         order=["United Kingdom",
                 "World",
                 "India",
@@ -42,6 +42,7 @@ def key_figure_creation(dataset):
         handles,labels = ax.get_legend_handles_labels()
         new_handles=[]
         new_labels=[]
+        #loops through all countries and attaches its corresponding label to improve readability
         for country in order:
                 if country in labels:
                         idx=labels.index(country)
@@ -68,7 +69,6 @@ def run():
     dataset = load(filepath)
     fig, _ = key_figure_creation(dataset)
     save_figure(fig, folder, filename)
-
     plt.tight_layout()
     plt.show()
     

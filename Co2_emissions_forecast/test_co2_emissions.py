@@ -1,3 +1,4 @@
+#imports all necessary libraries 
 import unittest
 import numpy as np
 import pandas as pd
@@ -12,6 +13,7 @@ class TestCo2Forecast(unittest.TestCase):
             "Year": ["2000", "2005", "2000", "2005"],
             "CO2 per capita (Trillions)": [1.0, 1.5, 0.5, 0.6],
         })
+        #converts year column to numeric values to ensure consistency and no string values are in the column
         self.df["Year"] = pd.to_numeric(self.df["Year"], errors="coerce")
 
     #tests year column for any integers and if all data values are integers

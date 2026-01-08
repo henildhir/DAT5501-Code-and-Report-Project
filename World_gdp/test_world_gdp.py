@@ -17,41 +17,43 @@ class TestWorldGDP(unittest.TestCase):
 
     #tests the filtered dataset and converts to long format for easier plotting
     def test_filter_and_convert_to_long(self):
-        #filter selected countries and years >= 1980
+        #imports the world_gdp function from main python file for analysis and returns the filtered dataset
         filtered = world_gdp.filter(self.df)
 
-        #only specified countries should remain (India is in list, Brazil is not)
+        #only specified countries should remain (India is in list, Brazil is not) to ensure all correct entities/nations are used for analysis
         self.assertTrue((filtered["Country Name"].unique() == ["India"]).all())
 
-        #correct year columns kept
+        #checks for whether the intended years are within the dataset. Time-range is between 1980 and 2024 therefore it also checks for years before 1980
         self.assertNotIn("1979", filtered.columns)
         self.assertIn("1980", filtered.columns)
         self.assertIn("1981", filtered.columns)
 
-        #convert to long
+        #convert to long format for easier access and data reading, ensures there are no errors
         long_df = world_gdp.convert_to_long(filtered)
 
-        #columns should be exactly these three (order not important in assert)
+        #columns should be exactly these three to maintain consistency and to ensure graphs produce contain only these values
         self.assertCountEqual(long_df.columns.tolist(), ["Country Name", "Year", "GDP"])
 
-        #number of rows = countries_after_filter * number_of_year_columns
+        #number of rows = countries_after_filter * number_of_year_columns 
         num_countries_rows = len(filtered)            # here: 2 India rows
         num_year_cols = 2                             # 1980, 1981
         expected_rows = num_countries_rows * num_year_cols  # 2 * 2 = 4
+        #checks whether the required length of array is the same as expected rows
         self.assertEqual(len(long_df), expected_rows)
 
+    #tests for sorting, converting and filtering the sub sample by importing filter(),convert_to_long and sort functions from main python file for analysis
     def test_sort_and_fix_types(self):
         filtered = world_gdp.filter(self.df)
         long_df = world_gdp.convert_to_long(filtered)
         clean_df = world_gdp.sort_and_fix(long_df)
 
-        # Year should be integer dtype
+        #checks whether values within year column are integers to ensure consistency
         self.assertTrue(pd.api.types.is_integer_dtype(clean_df["Year"]))
 
-        # GDP should be numeric dtype
+        #checks whether values within year column are integers to ensure consistency
         self.assertTrue(pd.api.types.is_numeric_dtype(clean_df["GDP"]))
 
-        # Data should be sorted by Country Name then Year
+        #Data should be sorted by Country Name then Year to improve readability
         sorted_copy = clean_df.sort_values(["Country Name", "Year"], ascending=[True, True])
         self.assertTrue(
             clean_df.reset_index(drop=True).equals(sorted_copy.reset_index(drop=True))

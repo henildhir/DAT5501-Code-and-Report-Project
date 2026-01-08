@@ -50,7 +50,7 @@ def create_plots(change,countries):
     axes[0].axhline(0, color ="black", linewidth=1)
     axes[0].set_ylabel("% change",fontsize=11)
     axes[0].set_xlabel("Year",fontsize=11)
-    axes[0].set_title("Annual % change of the world in CO2 emissions per capita since 1980",fontsize=11)
+    axes[0].set_title("Annual percentage (%) change of the world in CO2 emissions per capita since 1980",fontsize=11)
     axes[0].grid(True, alpha=0.3)
 
     #loops through each country in the countries list and plots its corresponding gdp percentage change in the second plot

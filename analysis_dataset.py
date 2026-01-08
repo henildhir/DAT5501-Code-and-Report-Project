@@ -14,12 +14,12 @@ def analysis_dataset_merging():
     merged = merged.merge(co2,on=["Country Name","Year"], how="inner")
     merged=merged.sort_values(["Country Name", "Year"])
 
-    #drops column 'code' as column 'country name' is already included
+    #drops column 'code' as column 'country name' is already included for consistency and fewer errors
     if "Code" in merged.columns:
         merged = merged.drop(columns=["Code"])
 
     #renamed column name for better readability and access
-    merged= merged.rename(columns={"CO2 per capita":"CO2 pdivideita (Trillions)","Population":"Population (Millions)"})
+    merged= merged.rename(columns={"CO2 per capita":"CO2 per capita (Trillions)","Population":"Population (Millions)"})
 
     #divides each column to an appropriate level of accuracy for plotting data
     merged["GDP (Trillions USD($))"]=merged["GDP"]/1e12

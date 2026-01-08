@@ -145,7 +145,7 @@ def co2_emissions_forecast(filepath):
 
 #runs the main function and called the combined dataset
 def run():
-    filepath = "analysis_dataset.csv"
+    filepath = "Analysis_dataset/analysis_dataset.csv"
     co2_emissions_forecast(filepath)
 
 if __name__ == "__main__":

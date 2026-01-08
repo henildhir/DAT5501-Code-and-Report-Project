@@ -63,7 +63,7 @@ def create_plots(change,countries):
     axes[1].axhline(0,color="black",linewidth=1)
     axes[1].set_xlabel("Year",fontsize=11)
     axes[1].set_ylabel("% change",fontsize=11)
-    axes[1].set_title("Annual % change of the world in GDP per capita since 1980",fontsize=11)
+    axes[1].set_title("Annual percentage (%) change of the world in GDP per capita since 1980",fontsize=11)
     axes[1].grid(True,alpha=0.3)
 
     #loops through both axes to set all the properties and visuals
@@ -86,7 +86,7 @@ def save_plot(fig,folder,filename):
 
 #This is the main function required to run the entire code. It contains the filepath, filename and necessary 
 def run():
-    filepath="analysis_dataset.csv"
+    filepath="Analysis_dataset/analysis_dataset.csv"
     countries=["World"]
     folder="Annual_percentage_change"
     filename="co2_gdp_annual_percentage_change.png"

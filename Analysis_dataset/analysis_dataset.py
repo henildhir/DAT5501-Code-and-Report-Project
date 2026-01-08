@@ -41,7 +41,7 @@ def analysis_dataset_merging():
 
     print(merged.head())
     #saves the dataset to a defined csv file excluding index values
-    merged.to_csv("analysis_dataset.csv", index="False")
+    merged.to_csv("Analysis_dataset/analysis_dataset.csv", index="False")
 
 if __name__ == "__main__":
     analysis_dataset_merging()

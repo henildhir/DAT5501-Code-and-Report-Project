@@ -134,7 +134,7 @@ def save(fig,folder,filename):
 
 #main function created to run with configuration settings of filepath, filename and folder. saves plot in given folder
 def run():
-    filepath = "analysis_dataset.csv"
+    filepath = "Analysis_dataset/analysis_dataset.csv"
     folder = "co2_emissions_vs_gdp_per_capita"
     filename = "co2_emissions_gdp_per_capita.png"
     dataset = load(filepath)
